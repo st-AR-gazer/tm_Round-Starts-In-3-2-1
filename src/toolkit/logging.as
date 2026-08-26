@@ -218,7 +218,7 @@ namespace logging {
 
 void log(
     const string &in msg,
-    LogLevel level = LogLevel::,
+    LogLevel level = LogLevel::Debug,
     int line = -1,
     string _fnName = "",
     string _tag = "",

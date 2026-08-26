@@ -1,11 +1,11 @@
 void Main() {
-    PluginTemplate::App::Main();
+    RoundStartsIn321::App::Main();
 }
 
 void RenderInterface() {
-    PluginTemplate::App::RenderInterface();
+    RoundStartsIn321::App::RenderInterface();
 }
 
 void RenderMenu() {
-    PluginTemplate::App::RenderMenu();
+    RoundStartsIn321::App::RenderMenu();
 }

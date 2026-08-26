@@ -1,9 +1,9 @@
 [SettingsTab name = "General" icon = "Cog" order = 1]
-void RenderPluginTemplateGeneralSettingsTab() {
-    PluginTemplate::App::RenderGeneralSettingsUI();
+void RenderRoundStartsIn321GeneralSettingsTab() {
+    RoundStartsIn321::App::RenderGeneralSettingsUI();
 }
 
 [SettingsTab name = "Logging" icon = "ListAlt" order = 99]
-void RenderPluginTemplateLoggingSettingsTab() {
-    PluginTemplate::App::RenderLoggingSettingsUI();
+void RenderRoundStartsIn321LoggingSettingsTab() {
+    RoundStartsIn321::App::RenderLoggingSettingsUI();
 }

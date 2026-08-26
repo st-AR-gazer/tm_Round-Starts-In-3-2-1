@@ -1,4 +1,4 @@
-namespace PluginTemplate {
+namespace RoundStartsIn321 {
     Meta::Plugin@ PluginMeta = Meta::ExecutingPlugin();
 
     namespace App {
@@ -14,7 +14,7 @@ namespace PluginTemplate {
         string g_MenuIcon = "";
 
         string PluginNameHash() {
-            return Crypto::MD5(PluginTemplate::PluginMeta.Name);
+            return Crypto::MD5(RoundStartsIn321::PluginMeta.Name);
         }
 
         string MenuIcon() {
@@ -26,7 +26,7 @@ namespace PluginTemplate {
 
         string MenuTitle() {
             string hash = PluginNameHash();
-            return "\\$" + hash.SubStr(0, 3) + MenuIcon() + "\\$z " + PluginTemplate::PluginMeta.Name;
+            return "\\$" + hash.SubStr(0, 3) + MenuIcon() + "\\$z " + RoundStartsIn321::PluginMeta.Name;
         }
     }
 }
