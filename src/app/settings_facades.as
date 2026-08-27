@@ -6,9 +6,8 @@ namespace RoundStartsIn321 {
                 S_WindowOpen = UI::Checkbox("Show main window", S_WindowOpen);
                 S_HideWithGame = UI::Checkbox("Hide with game UI", S_HideWithGame);
                 S_HideWithOP = UI::Checkbox("Hide with Openplanet UI", S_HideWithOP);
-
                 UI::Separator();
-                RoundStartsIn321::Status::RenderSettingsUI();
+                RoundStartsIn321::Countdown::RenderDiagnosticsSettingsUI();
             }
             UI::EndChild();
         }

@@ -2,13 +2,11 @@ namespace RoundStartsIn321 {
     Meta::Plugin@ PluginMeta = Meta::ExecutingPlugin();
 
     namespace App {
-        [Setting hidden name = "Window open"]
+        [Setting hidden name="Window open"]
         bool S_WindowOpen = true;
-
-        [Setting hidden name = "Hide with game UI"]
+        [Setting hidden name="Hide with game UI"]
         bool S_HideWithGame = true;
-
-        [Setting hidden name = "Hide with Openplanet UI"]
+        [Setting hidden name="Hide with Openplanet UI"]
         bool S_HideWithOP = false;
 
         string g_MenuIcon = "";

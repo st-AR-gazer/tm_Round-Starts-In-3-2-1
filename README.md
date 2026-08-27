@@ -9,11 +9,8 @@ A lightweight Trackmania Openplanet plugin project for a clear round-start count
 
 - `src/initialization.as` exposes the Openplanet lifecycle callbacks.
 - `src/app/` owns application state, settings, and UI composition.
-- `src/features/status/` contains the initial feature-status panel.
+- `src/countdown/` contains the Phase 1 detector, state machine, and temporary diagnostics.
 - `src/toolkit/` contains shared utility and logging helpers.
-
-The initial scaffold is ready for countdown behavior to be implemented and
-tested in its OpenplanetDev suite.
 
 ## Build
 

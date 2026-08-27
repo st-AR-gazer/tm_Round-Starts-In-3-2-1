@@ -1,6 +1,7 @@
 namespace RoundStartsIn321 {
     namespace App {
         void Main() {
+            RoundStartsIn321::Countdown::Initialise();
             log(
                 "Loaded " + RoundStartsIn321::PluginMeta.Name + " v" + RoundStartsIn321::PluginMeta.Version,
                 LogLevel::Debug,
@@ -34,7 +35,7 @@ namespace RoundStartsIn321 {
         void RenderWindow() {
             UI::Text(RoundStartsIn321::PluginMeta.Name + " " + RoundStartsIn321::PluginMeta.Version);
             UI::Separator();
-            RoundStartsIn321::Status::RenderPanel();
+            RoundStartsIn321::Countdown::RenderDiagnosticsPanel();
         }
     }
 }
