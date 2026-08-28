@@ -3,11 +3,7 @@ namespace RoundStartsIn321 {
         void RenderGeneralSettingsUI() {
             bool open = UI::BeginChild("##round-starts-in-321-settings-general", vec2(0, 0), false);
             if (open) {
-                S_WindowOpen = UI::Checkbox("Show main window", S_WindowOpen);
-                S_HideWithGame = UI::Checkbox("Hide with game UI", S_HideWithGame);
-                S_HideWithOP = UI::Checkbox("Hide with Openplanet UI", S_HideWithOP);
-                UI::Separator();
-                RoundStartsIn321::Countdown::RenderDiagnosticsSettingsUI();
+                RoundStartsIn321::Countdown::RenderSettingsUI();
             }
             UI::EndChild();
         }

@@ -1,8 +1,5 @@
 namespace RoundStartsIn321 {
     namespace Countdown {
-        const int kCountdownWindowMs = 10000;
-        const int kGoHoldMs = 500;
-
         [Setting hidden name="Log countdown state transitions"]
         bool S_LogStateTransitions = true;
 
@@ -53,6 +50,7 @@ namespace RoundStartsIn321 {
         string g_TrackedPlayerLogin = "";
         int g_TrackedStartTime = -1;
         bool g_ObservedFutureStart = false;
+        int g_DisplayCountdownSpanMs = 0;
         bool g_HasPreviousEligibleSample = false;
         int g_PreviousRemainingMs = 0;
         bool g_HasPreviousClockSample = false;
@@ -132,6 +130,7 @@ namespace RoundStartsIn321 {
             g_TrackedPlayerLogin = "";
             g_TrackedStartTime = -1;
             g_ObservedFutureStart = false;
+            g_DisplayCountdownSpanMs = 0;
             g_HasPreviousEligibleSample = false;
             g_PreviousRemainingMs = 0;
             g_GoStartedAtMs = -1;
@@ -167,7 +166,12 @@ namespace RoundStartsIn321 {
             g_TrackedPlayerLogin = snapshot.playerLogin;
             g_TrackedStartTime = snapshot.startTime;
             g_ObservedFutureStart = snapshot.remainingMs > 0;
+            g_DisplayCountdownSpanMs = 0;
             g_GoStartedAtMs = -1;
+        }
+
+        void BeginDisplayCountdown(int remainingMs) {
+            g_DisplayCountdownSpanMs = Math::Max(1, remainingMs);
         }
 
         void RememberSnapshot(CountdownSnapshot@ snapshot) {
@@ -218,9 +222,10 @@ namespace RoundStartsIn321 {
                     ResetTracking("Start context changed to " + snapshot.playerLogin + " at " + tostring(snapshot.startTime));
                 }
                 TrackStart(snapshot);
-                if (snapshot.remainingMs > kCountdownWindowMs) {
+                if (snapshot.remainingMs > CountdownWindowMs()) {
                     SetPhase(CountdownPhase::Armed, "Future player start detected");
                 } else if (snapshot.remainingMs > 0) {
+                    BeginDisplayCountdown(snapshot.remainingMs);
                     SetPhase(CountdownPhase::Counting, "Entered the countdown window");
                 } else {
                     SetPhase(CountdownPhase::Hidden, "Start was already reached when first observed");
@@ -232,9 +237,15 @@ namespace RoundStartsIn321 {
             if (snapshot.remainingMs > 0) {
                 g_ObservedFutureStart = true;
                 g_GoStartedAtMs = -1;
-                if (snapshot.remainingMs > kCountdownWindowMs) {
+                if (snapshot.remainingMs > CountdownWindowMs()) {
+                    g_DisplayCountdownSpanMs = 0;
                     SetPhase(CountdownPhase::Armed, "Waiting for the display window");
                 } else {
+                    if (g_Phase != CountdownPhase::Counting || g_DisplayCountdownSpanMs <= 0) {
+                        BeginDisplayCountdown(snapshot.remainingMs);
+                    } else if (snapshot.remainingMs > g_DisplayCountdownSpanMs) {
+                        g_DisplayCountdownSpanMs = snapshot.remainingMs;
+                    }
                     SetPhase(CountdownPhase::Counting, "Player start is in the future");
                 }
             } else {
@@ -245,7 +256,7 @@ namespace RoundStartsIn321 {
                 if (crossedZero) {
                     g_GoStartedAtMs = Time::Now;
                     SetPhase(CountdownPhase::Go, "Player start clock crossed zero");
-                } else if (g_Phase == CountdownPhase::Go && g_GoStartedAtMs >= 0 && Time::Now - g_GoStartedAtMs < kGoHoldMs) {
+                } else if (g_Phase == CountdownPhase::Go && g_GoStartedAtMs >= 0 && Time::Now - g_GoStartedAtMs < GoDurationMs()) {
                     SetPhase(CountdownPhase::Go, "Holding the GO state");
                 } else {
                     SetPhase(CountdownPhase::Hidden, "Player start has passed");

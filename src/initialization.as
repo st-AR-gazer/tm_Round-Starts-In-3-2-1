@@ -6,10 +6,6 @@ void Update(float dt) {
     RoundStartsIn321::Countdown::Update(dt);
 }
 
-void RenderInterface() {
-    RoundStartsIn321::App::RenderInterface();
-}
-
-void RenderMenu() {
-    RoundStartsIn321::App::RenderMenu();
+void Render() {
+    RoundStartsIn321::Countdown::RenderOverlay();
 }
