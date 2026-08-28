@@ -115,12 +115,16 @@ namespace RoundStartsIn321 {
             g_LastTransitionReason = reason;
             g_LastTransitionAtMs = Time::Now;
             if (S_LogStateTransitions) {
-                log(
-                    previousName + " -> " + PhaseName(nextPhase) + ": " + reason,
-                    LogLevel::Debug,
-                    -1,
-                    "Countdown::SetPhase"
-                );
+                logging::Entry entry("Countdown phase changed", logging::Level::Debug);
+                entry.Context = "RoundStartsIn321::Countdown::SetPhase";
+                entry.Tag = "countdown";
+                entry.Add("previous_phase", previousName);
+                entry.Add("current_phase", PhaseName(nextPhase));
+                entry.Add("reason", reason);
+                entry.Add("transition_count", g_TransitionCount);
+                entry.Add("map_uid", g_TrackedMapUid);
+                entry.Add("start_time", g_TrackedStartTime);
+                logging::Write(entry);
             }
         }
 
@@ -138,12 +142,12 @@ namespace RoundStartsIn321 {
             g_ResetCount++;
             g_LastResetReason = reason;
             if (hadTrackedStart && S_LogStateTransitions) {
-                log(
-                    "Tracking reset: " + reason,
-                    LogLevel::Debug,
-                    -1,
-                    "Countdown::ResetTracking"
-                );
+                logging::Entry entry("Countdown tracking reset", logging::Level::Debug);
+                entry.Context = "RoundStartsIn321::Countdown::ResetTracking";
+                entry.Tag = "countdown";
+                entry.Add("reason", reason);
+                entry.Add("reset_count", g_ResetCount);
+                logging::Write(entry);
             }
         }
 
