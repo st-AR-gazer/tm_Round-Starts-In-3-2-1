@@ -38,8 +38,9 @@ def archive_name(path):
 
 
 def zip_directory(src_dir, zip_file):
-    for root, _, files in os.walk(src_dir):
-        for file in files:
+    for root, directories, files in os.walk(src_dir):
+        directories.sort()
+        for file in sorted(files):
             file_path = Path(root) / file
             zip_file.write(file_path, archive_name(file_path))
 
@@ -59,7 +60,7 @@ def create_op_file():
                 zipf.write(file_path, archive_name(file_path))
 
     print(f"Created {op_file_name} successfully.")
-    print("Reminder: set logging::S_showDefaultLogs to the default you want before release builds.")
+    print("Packaged src/ plus release metadata; ignored dev diagnostics are excluded.")
 
 
 if __name__ == "__main__":

@@ -21,8 +21,3 @@ remaining time in seconds.
 
 ```powershell
 python _build.py
-```
-
-## Credits
-
-ar

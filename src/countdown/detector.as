@@ -106,6 +106,10 @@ namespace RoundStartsIn321 {
             }
             snapshot.hasLocalUser = true;
             snapshot.localLogin = localUser.Login;
+            if (snapshot.localLogin.Length == 0) {
+                snapshot.reason = "Local user login is unavailable";
+                return snapshot;
+            }
             string playerSource;
             CSmPlayer@ player = FindLocalPlayer(playground, terminal, localUser, playerSource);
             snapshot.playerSource = playerSource;

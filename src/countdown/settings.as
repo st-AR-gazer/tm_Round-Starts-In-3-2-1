@@ -2,6 +2,7 @@ namespace RoundStartsIn321 {
     namespace Countdown {
         const int kCountdownDisplayStart = 3;
         const int kPreviewCountdownMs = 1400;
+        const int kDefaultDecimalPlaces = 0;
 
         [Setting hidden name="Enable countdown overlay"]
         bool S_Enabled = true;
@@ -10,11 +11,13 @@ namespace RoundStartsIn321 {
         [Setting hidden name="Seconds before start to show countdown"]
         int S_CountdownWindowSeconds = 10;
         [Setting hidden name="Countdown decimal places"]
-        int S_DecimalPlaces = 2;
+        int S_DecimalPlaces = kDefaultDecimalPlaces;
         [Setting hidden name="Use real remaining seconds"]
         bool S_UseRealCountdown = false;
         [Setting hidden name="Countdown size"]
         float S_FontScale = 1.0f;
+        [Setting hidden name="Animate countdown overlay"]
+        bool S_AnimateOverlay = true;
         [Setting hidden name="Show GO message"]
         bool S_ShowGo = true;
         [Setting hidden name="GO message duration"]
@@ -26,7 +29,17 @@ namespace RoundStartsIn321 {
         [Setting hidden name="Countdown value color"]
         vec4 S_CountdownColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
         [Setting hidden name="GO message color"]
-        vec4 S_GoColor = vec4(0.30f, 1.0f, 0.48f, 1.0f);
+        vec4 S_GoColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+        [Setting hidden name="Use countdown step background colors"]
+        bool S_UseStageBackgroundColors = true;
+        [Setting hidden name="3 and above background color"]
+        vec4 S_ThreeBackgroundColor = vec4(0.72f, 0.06f, 0.07f, 0.92f);
+        [Setting hidden name="2 background color"]
+        vec4 S_TwoBackgroundColor = vec4(0.85f, 0.27f, 0.02f, 0.92f);
+        [Setting hidden name="1 background color"]
+        vec4 S_OneBackgroundColor = vec4(0.72f, 0.52f, 0.02f, 0.92f);
+        [Setting hidden name="GO background color"]
+        vec4 S_GoBackgroundColor = vec4(0.05f, 0.52f, 0.16f, 0.92f);
         [Setting hidden name="Countdown background color"]
         vec4 S_BackgroundColor = vec4(0.015f, 0.022f, 0.035f, 0.82f);
 
@@ -91,15 +104,21 @@ namespace RoundStartsIn321 {
             S_Enabled = true;
             S_HideWithGameUi = true;
             S_CountdownWindowSeconds = 10;
-            S_DecimalPlaces = 2;
+            S_DecimalPlaces = kDefaultDecimalPlaces;
             S_UseRealCountdown = false;
             S_FontScale = 1.0f;
+            S_AnimateOverlay = true;
             S_ShowGo = true;
             S_GoDurationMs = 500;
             S_ShowBackground = true;
             S_HeadingColor = vec4(0.82f, 0.88f, 0.96f, 1.0f);
             S_CountdownColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-            S_GoColor = vec4(0.30f, 1.0f, 0.48f, 1.0f);
+            S_GoColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            S_UseStageBackgroundColors = true;
+            S_ThreeBackgroundColor = vec4(0.72f, 0.06f, 0.07f, 0.92f);
+            S_TwoBackgroundColor = vec4(0.85f, 0.27f, 0.02f, 0.92f);
+            S_OneBackgroundColor = vec4(0.72f, 0.52f, 0.02f, 0.92f);
+            S_GoBackgroundColor = vec4(0.05f, 0.52f, 0.16f, 0.92f);
             S_BackgroundColor = vec4(0.015f, 0.022f, 0.035f, 0.82f);
         }
 
@@ -132,7 +151,7 @@ namespace RoundStartsIn321 {
             if (S_UseRealCountdown) {
                 UI::TextDisabled("Shows the detector's literal remaining time.");
             } else {
-                UI::TextDisabled("Maps each detected pre-start window to 3 -> 0; the values are not seconds.");
+                UI::TextDisabled("Short starts map to 3 -> 2 -> 1; starts over 3 seconds use their full count.");
             }
             UI::SetNextItemWidth(260.0f);
             S_FontScale = UI::SliderFloat(
@@ -142,6 +161,11 @@ namespace RoundStartsIn321 {
                 2.0f,
                 "%.2f x"
             );
+            S_AnimateOverlay = UI::Checkbox(
+                "Animate appearance and GO!##round-starts-in-321-overlay",
+                S_AnimateOverlay
+            );
+            UI::TextDisabled("Disable animation for an immediate, motion-free display.");
             UI::Separator();
             S_ShowGo = UI::Checkbox("Show GO!##round-starts-in-321-overlay", S_ShowGo);
             if (S_ShowGo) {
@@ -163,10 +187,34 @@ namespace RoundStartsIn321 {
             S_CountdownColor = UI::InputColor4("Countdown color##round-starts-in-321-overlay", S_CountdownColor);
             S_GoColor = UI::InputColor4("GO! color##round-starts-in-321-overlay", S_GoColor);
             if (S_ShowBackground) {
-                S_BackgroundColor = UI::InputColor4(
-                    "Background color##round-starts-in-321-overlay",
-                    S_BackgroundColor
+                S_UseStageBackgroundColors = UI::Checkbox(
+                    "Color background by countdown step##round-starts-in-321-overlay",
+                    S_UseStageBackgroundColors
                 );
+                if (S_UseStageBackgroundColors) {
+                    S_ThreeBackgroundColor = UI::InputColor4(
+                        "3+ background##round-starts-in-321-overlay",
+                        S_ThreeBackgroundColor
+                    );
+                    S_TwoBackgroundColor = UI::InputColor4(
+                        "2 background##round-starts-in-321-overlay",
+                        S_TwoBackgroundColor
+                    );
+                    S_OneBackgroundColor = UI::InputColor4(
+                        "1 background##round-starts-in-321-overlay",
+                        S_OneBackgroundColor
+                    );
+                    S_GoBackgroundColor = UI::InputColor4(
+                        "GO! background##round-starts-in-321-overlay",
+                        S_GoBackgroundColor
+                    );
+                    UI::TextDisabled("Defaults: 3+ red, 2 orange, 1 yellow, GO! green.");
+                } else {
+                    S_BackgroundColor = UI::InputColor4(
+                        "Background color##round-starts-in-321-overlay",
+                        S_BackgroundColor
+                    );
+                }
             }
             UI::Separator();
             if (UI::Button("Preview countdown##round-starts-in-321-overlay")) {
