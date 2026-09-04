@@ -102,8 +102,8 @@ namespace RoundStartsIn321 {
 
         void ResetOverlaySettings() {
             S_Enabled = true;
-            S_HideWithGameUi = true;
-            S_CountdownWindowSeconds = 10;
+            S_HideWithGameUi = false;
+            S_CountdownWindowSeconds = 15;
             S_DecimalPlaces = kDefaultDecimalPlaces;
             S_UseRealCountdown = false;
             S_FontScale = 1.0f;
@@ -148,11 +148,6 @@ namespace RoundStartsIn321 {
                 "Use real remaining time (seconds)##round-starts-in-321-overlay",
                 S_UseRealCountdown
             );
-            if (S_UseRealCountdown) {
-                UI::TextDisabled("Shows the detector's literal remaining time.");
-            } else {
-                UI::TextDisabled("Short starts map to 3 -> 2 -> 1; starts over 3 seconds use their full count.");
-            }
             UI::SetNextItemWidth(260.0f);
             S_FontScale = UI::SliderFloat(
                 "Display size##round-starts-in-321-overlay",
@@ -165,7 +160,6 @@ namespace RoundStartsIn321 {
                 "Animate appearance and GO!##round-starts-in-321-overlay",
                 S_AnimateOverlay
             );
-            UI::TextDisabled("Disable animation for an immediate, motion-free display.");
             UI::Separator();
             S_ShowGo = UI::Checkbox("Show GO!##round-starts-in-321-overlay", S_ShowGo);
             if (S_ShowGo) {
@@ -208,7 +202,6 @@ namespace RoundStartsIn321 {
                         "GO! background##round-starts-in-321-overlay",
                         S_GoBackgroundColor
                     );
-                    UI::TextDisabled("Defaults: 3+ red, 2 orange, 1 yellow, GO! green.");
                 } else {
                     S_BackgroundColor = UI::InputColor4(
                         "Background color##round-starts-in-321-overlay",
@@ -229,9 +222,7 @@ namespace RoundStartsIn321 {
             UI::SameLine();
             if (UI::Button("Reset defaults##round-starts-in-321-overlay")) {
                 ResetOverlaySettings();
-                StartPreview();
             }
-            UI::TextDisabled("Preview rendering does not alter the live countdown detector.");
         }
     }
 }
