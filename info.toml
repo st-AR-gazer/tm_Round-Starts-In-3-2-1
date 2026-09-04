@@ -2,7 +2,7 @@
 name = "Round Starts In 3 2 1"
 author = "ar"
 version = "0.1.0"
-category = "Race"
+category = "Utilities"
 
 [script]
 dependencies = []
