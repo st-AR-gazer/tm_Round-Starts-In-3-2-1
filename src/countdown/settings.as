@@ -10,6 +10,8 @@ namespace RoundStartsIn321 {
         bool S_HideWithGameUi = true;
         [Setting hidden name="Flash taskbar when countdown appears"]
         bool S_FlashTaskbar = false;
+        [Setting hidden name="Focus game when countdown appears"]
+        bool S_FocusGame = false;
         [Setting hidden name="Seconds before start to show countdown"]
         int S_CountdownWindowSeconds = 10;
         [Setting hidden name="Countdown decimal places"]
@@ -107,6 +109,7 @@ namespace RoundStartsIn321 {
             S_Enabled = true;
             S_HideWithGameUi = false;
             S_FlashTaskbar = false;
+            S_FocusGame = false;
             S_CountdownWindowSeconds = 15;
             S_DecimalPlaces = kDefaultDecimalPlaces;
             S_UseRealCountdown = false;
@@ -135,6 +138,8 @@ namespace RoundStartsIn321 {
             );
             S_FlashTaskbar = UI::Checkbox("Flash taskbar on countdown", S_FlashTaskbar);
             UI::SetItemTooltip("Flashes once when the countdown appears. Does not switch to the game.");
+            S_FocusGame = UI::Checkbox("Focus game on countdown", S_FocusGame);
+            UI::SetItemTooltip("Brings Trackmania forward when the countdown starts, including from another desktop.");
             UI::SetNextItemWidth(260.0f);
             S_CountdownWindowSeconds = UI::SliderInt(
                 "Show before start##round-starts-in-321-overlay",
