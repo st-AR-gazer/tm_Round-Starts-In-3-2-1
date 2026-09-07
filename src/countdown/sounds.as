@@ -19,7 +19,9 @@ namespace RoundStartsIn321 {
         [Setting hidden name="Sound for tick 2"]
         int S_TwoTickSound = TickSound::LowBeep;
         [Setting hidden name="Sound for tick 1"]
-        int S_OneTickSound = TickSound::HighBeep;
+        int S_OneTickSound = TickSound::LowBeep;
+        [Setting hidden name="Sound for GO"]
+        int S_GoTickSound = TickSound::Chime;
 
         array<Audio::Sample@> g_TickSamples(5);
         SoundTickTracker g_SoundTicks;
@@ -69,6 +71,7 @@ namespace RoundStartsIn321 {
             if (step == 3) return S_ThreeTickSound;
             if (step == 2) return S_TwoTickSound;
             if (step == 1) return S_OneTickSound;
+            if (step == 0) return S_GoTickSound;
             return TickSound::None;
         }
 
@@ -79,9 +82,19 @@ namespace RoundStartsIn321 {
 
         class SoundTickTracker {
             int lastStep = 0;
+            bool finished = false;
+
+            void Reset() {
+                lastStep = 0;
+                finished = false;
+            }
 
             bool Consume(int step) {
-                if (step <= 0) return false;
+                if (step < 0 || finished) return false;
+                if (step == 0) {
+                    finished = true;
+                    return true;
+                }
                 if (lastStep > 0 && step >= lastStep) return false;
                 lastStep = step;
                 return true;
@@ -92,14 +105,15 @@ namespace RoundStartsIn321 {
             int remainingMs;
             bool showGo;
             bool preview = TryGetPreviewFrame(remainingMs, showGo);
-            if (preview && !showGo) {
-                int step = SoundStep(remainingMs, kPreviewCountdownMs);
+            if (preview) {
+                int step = showGo ? 0 : SoundStep(remainingMs, kPreviewCountdownMs);
                 if (g_PreviewSoundTicks.Consume(step) && S_SoundsEnabled) {
                     PlayTickSound(SoundForStep(step));
                 }
             }
-            if (g_Phase != CountdownPhase::Counting || g_Snapshot is null || !g_Snapshot.canTrack) return;
-            int step = SoundStep(g_Snapshot.remainingMs, g_DisplayCountdownSpanMs);
+            if ((g_Phase != CountdownPhase::Counting && g_Phase != CountdownPhase::Go)
+                || g_Snapshot is null || !g_Snapshot.canTrack) return;
+            int step = g_Phase == CountdownPhase::Go ? 0 : SoundStep(g_Snapshot.remainingMs, g_DisplayCountdownSpanMs);
             if (!g_SoundTicks.Consume(step)) return;
             if (preview || !S_SoundsEnabled || !S_Enabled) return;
             if (S_HideWithGameUi && !UI::IsGameUIVisible()) return;
@@ -135,6 +149,7 @@ namespace RoundStartsIn321 {
             S_ThreeTickSound = RenderSoundChoice("3", S_ThreeTickSound);
             S_TwoTickSound = RenderSoundChoice("2", S_TwoTickSound);
             S_OneTickSound = RenderSoundChoice("1", S_OneTickSound);
+            S_GoTickSound = RenderSoundChoice("GO", S_GoTickSound);
             UI::Separator();
             UI::BeginDisabled();
             UI::Button("Add audio file...");
@@ -156,7 +171,8 @@ namespace RoundStartsIn321 {
                 S_EarlyTickSound = TickSound::SoftTick;
                 S_ThreeTickSound = TickSound::LowBeep;
                 S_TwoTickSound = TickSound::LowBeep;
-                S_OneTickSound = TickSound::HighBeep;
+                S_OneTickSound = TickSound::LowBeep;
+                S_GoTickSound = TickSound::Chime;
             }
         }
     }

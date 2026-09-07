@@ -70,7 +70,7 @@ namespace RoundStartsIn321 {
         }
 
         void StartPreview() {
-            g_PreviewSoundTicks.lastStep = 0;
+            g_PreviewSoundTicks.Reset();
             g_PreviewStartedAtMs = Time::Now;
         }
 
@@ -96,7 +96,7 @@ namespace RoundStartsIn321 {
                 remainingMs = kPreviewCountdownMs - int(elapsedMs);
                 return true;
             }
-            if (S_ShowGo && elapsedMs < kPreviewCountdownMs + GoDurationMs()) {
+            if (elapsedMs < kPreviewCountdownMs + GoDurationMs()) {
                 showGo = true;
                 return true;
             }

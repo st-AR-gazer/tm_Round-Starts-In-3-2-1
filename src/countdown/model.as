@@ -150,7 +150,7 @@ namespace RoundStartsIn321 {
 
         void ResetTracking(const string &in reason, bool recordReset = true) {
             g_CountdownAppearanceObserved = false;
-            g_SoundTicks.lastStep = 0;
+            g_SoundTicks.Reset();
             bool hadTrackedStart = g_TrackedStartTime >= 0 || g_TrackedPlayerLogin.Length > 0;
             string previousMapUid = g_TrackedMapUid;
             int previousStartTime = g_TrackedStartTime;
@@ -211,7 +211,7 @@ namespace RoundStartsIn321 {
 
         void TrackStart(CountdownSnapshot@ snapshot) {
             g_CountdownAppearanceObserved = false;
-            g_SoundTicks.lastStep = 0;
+            g_SoundTicks.Reset();
             g_TrackedMapUid = snapshot.mapUid;
             g_TrackedPlayerLogin = snapshot.playerLogin;
             g_TrackedStartTime = snapshot.startTime;

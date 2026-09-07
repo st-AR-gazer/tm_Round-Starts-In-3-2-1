@@ -101,7 +101,7 @@ namespace RoundStartsIn321 {
 
             if (TryGetPreviewFrame(remainingMs, showGo)) {
                 displaySpanMs = kPreviewCountdownMs;
-                return true;
+                return !showGo || S_ShowGo;
             }
             if (!S_Enabled) return false;
             if (S_HideWithGameUi && !UI::IsGameUIVisible()) return false;
