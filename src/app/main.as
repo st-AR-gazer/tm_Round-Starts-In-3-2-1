@@ -5,6 +5,7 @@ namespace RoundStartsIn321 {
             RoundStartsIn321::Countdown::Initialise();
             RoundStartsIn321::Countdown::InitialiseSettingsRuntime();
             RoundStartsIn321::Countdown::InitialiseOverlay();
+            RoundStartsIn321::Countdown::InitialiseSounds();
             logging::Entry entry("Plugin initialized", logging::Level::Info);
             entry.Context = "RoundStartsIn321::App::Main";
             entry.Tag = "lifecycle";

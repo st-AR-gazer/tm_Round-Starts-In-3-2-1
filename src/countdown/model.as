@@ -149,6 +149,7 @@ namespace RoundStartsIn321 {
         }
 
         void ResetTracking(const string &in reason, bool recordReset = true) {
+            g_SoundTicks.lastStep = 0;
             bool hadTrackedStart = g_TrackedStartTime >= 0 || g_TrackedPlayerLogin.Length > 0;
             string previousMapUid = g_TrackedMapUid;
             int previousStartTime = g_TrackedStartTime;
@@ -208,6 +209,7 @@ namespace RoundStartsIn321 {
         }
 
         void TrackStart(CountdownSnapshot@ snapshot) {
+            g_SoundTicks.lastStep = 0;
             g_TrackedMapUid = snapshot.mapUid;
             g_TrackedPlayerLogin = snapshot.playerLogin;
             g_TrackedStartTime = snapshot.startTime;
@@ -377,6 +379,7 @@ namespace RoundStartsIn321 {
             CountdownSnapshot@ snapshot = DetectSnapshot();
             AdvanceState(snapshot);
             @g_Snapshot = snapshot;
+            UpdateSounds();
         }
     }
 }

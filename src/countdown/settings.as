@@ -66,6 +66,7 @@ namespace RoundStartsIn321 {
         }
 
         void StartPreview() {
+            g_PreviewSoundTicks.lastStep = 0;
             g_PreviewStartedAtMs = Time::Now;
         }
 

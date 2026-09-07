@@ -6,4 +6,4 @@ category = "Utilities"
 
 [script]
 dependencies = []
-optional_dependencies = []
+optional_dependencies = [ "fileexplorer" ]
