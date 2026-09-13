@@ -16,6 +16,7 @@ namespace RoundStartsIn321 {
         }
 
         class CountdownSnapshot {
+            bool isServerSession = false;
             bool hasMap = false;
             bool hasPlayground = false;
             bool hasClientApi = false;

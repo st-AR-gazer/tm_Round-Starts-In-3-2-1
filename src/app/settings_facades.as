@@ -15,5 +15,17 @@ namespace RoundStartsIn321 {
             }
             UI::EndChild();
         }
+
+        void RenderAppearanceSettingsUI() {
+            bool open = UI::BeginChild("##round-starts-in-321-settings-appearance", vec2(0, 0), false);
+            if (open) RoundStartsIn321::Countdown::RenderAppearanceSettingsUI();
+            UI::EndChild();
+        }
+
+        void RenderWindowSettingsUI() {
+            bool open = UI::BeginChild("##round-starts-in-321-settings-window", vec2(0, 0), false);
+            if (open) RoundStartsIn321::Countdown::RenderWindowSettingsUI();
+            UI::EndChild();
+        }
     }
 }

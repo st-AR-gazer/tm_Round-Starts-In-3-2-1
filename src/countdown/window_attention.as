@@ -8,7 +8,7 @@ namespace RoundStartsIn321 {
             if (g_Phase != CountdownPhase::Counting || g_Snapshot is null || !g_Snapshot.canTrack || g_Snapshot.remainingMs <= 0) return false;
 
             g_CountdownAppearanceObserved = true;
-            return true;
+            return IsCountdownSessionAllowed();
         }
 
         void UpdateWindowAttention() {

@@ -66,6 +66,7 @@ namespace RoundStartsIn321 {
 
             CGamePlaygroundClientScriptAPI@ clientApi = network.PlaygroundClientScriptAPI;
             snapshot.hasClientApi = true;
+            snapshot.isServerSession = network.IsMultiInternet;
             snapshot.gameTime = clientApi.GameTime;
             snapshot.isSpectator = clientApi.IsSpectator || clientApi.IsSpectatorClient;
             if (clientApi.Map !is null && clientApi.Map.MapInfo !is null) {

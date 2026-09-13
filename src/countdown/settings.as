@@ -4,6 +4,14 @@ namespace RoundStartsIn321 {
         const int kPreviewCountdownMs = 1400;
         const int kDefaultDecimalPlaces = 0;
 
+        enum CountdownScope {
+            Everywhere,
+            ServersOnly,
+            SoloOnly
+        }
+
+        [Setting hidden name="Show countdown in"]
+        CountdownScope S_CountdownScope = CountdownScope::Everywhere;
         [Setting hidden name="Enable countdown overlay"]
         bool S_Enabled = true;
         [Setting hidden name="Hide countdown with game UI"]
@@ -28,6 +36,8 @@ namespace RoundStartsIn321 {
         int S_GoDurationMs = 500;
         [Setting hidden name="Show countdown background"]
         bool S_ShowBackground = true;
+        [Setting hidden name="Countdown card opacity"]
+        int S_CardOpacity = 50;
         [Setting hidden name="Countdown heading color"]
         vec4 S_HeadingColor = vec4(0.82f, 0.88f, 0.96f, 1.0f);
         [Setting hidden name="Countdown value color"]
@@ -48,6 +58,20 @@ namespace RoundStartsIn321 {
         vec4 S_BackgroundColor = vec4(0.015f, 0.022f, 0.035f, 0.82f);
 
         int64 g_PreviewStartedAtMs = -1;
+
+        string CountdownScopeName(CountdownScope scope) {
+            if (scope == CountdownScope::ServersOnly) return "Servers only";
+            if (scope == CountdownScope::SoloOnly) return "Solo only";
+            return "Everywhere";
+        }
+
+        bool IsCountdownSessionAllowed() {
+            if (S_CountdownScope == CountdownScope::Everywhere) return true;
+            if (g_Snapshot is null || !g_Snapshot.hasClientApi) return false;
+            if (S_CountdownScope == CountdownScope::ServersOnly) return g_Snapshot.isServerSession;
+            if (S_CountdownScope == CountdownScope::SoloOnly) return !g_Snapshot.isServerSession;
+            return true;
+        }
 
         int CountdownWindowMs() {
             return Math::Clamp(S_CountdownWindowSeconds, 1, 60) * 1000;
@@ -105,19 +129,22 @@ namespace RoundStartsIn321 {
             return false;
         }
 
-        void ResetOverlaySettings() {
+        void ResetGeneralSettings() {
+            S_CountdownScope = CountdownScope::Everywhere;
             S_Enabled = true;
             S_HideWithGameUi = false;
-            S_FlashTaskbar = false;
-            S_FocusGame = false;
             S_CountdownWindowSeconds = 15;
             S_DecimalPlaces = kDefaultDecimalPlaces;
             S_UseRealCountdown = false;
-            S_FontScale = 1.0f;
-            S_AnimateOverlay = true;
             S_ShowGo = true;
             S_GoDurationMs = 500;
+        }
+
+        void ResetAppearanceSettings() {
+            S_FontScale = 1.0f;
+            S_AnimateOverlay = true;
             S_ShowBackground = true;
+            S_CardOpacity = 50;
             S_HeadingColor = vec4(0.82f, 0.88f, 0.96f, 1.0f);
             S_CountdownColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
             S_GoColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -129,17 +156,33 @@ namespace RoundStartsIn321 {
             S_BackgroundColor = vec4(0.015f, 0.022f, 0.035f, 0.82f);
         }
 
+        void ResetWindowSettings() {
+            S_FlashTaskbar = false;
+            S_FocusGame = false;
+        }
+
+        void ResetOverlaySettings() {
+            ResetGeneralSettings();
+            ResetAppearanceSettings();
+            ResetWindowSettings();
+        }
+
         void RenderSettingsUI() {
-            UI::Text("Countdown overlay");
             S_Enabled = UI::Checkbox("Enabled##round-starts-in-321-overlay", S_Enabled);
+            UI::SetNextItemWidth(260.0f);
+            if (UI::BeginCombo("Show in", CountdownScopeName(S_CountdownScope))) {
+                for (int i = 0; i <= int(CountdownScope::SoloOnly); i++) {
+                    CountdownScope scope = CountdownScope(i);
+                    if (UI::Selectable(CountdownScopeName(scope), S_CountdownScope == scope)) {
+                        S_CountdownScope = scope;
+                    }
+                }
+                UI::EndCombo();
+            }
             S_HideWithGameUi = UI::Checkbox(
                 "Hide when the game UI is hidden##round-starts-in-321-overlay",
                 S_HideWithGameUi
             );
-            S_FlashTaskbar = UI::Checkbox("Flash taskbar on countdown", S_FlashTaskbar);
-            UI::SetItemTooltip("Flashes once when the countdown appears. Does not switch to the game.");
-            S_FocusGame = UI::Checkbox("Focus game on countdown", S_FocusGame);
-            UI::SetItemTooltip("Brings Trackmania forward when the countdown starts, including from another desktop.");
             UI::SetNextItemWidth(260.0f);
             S_CountdownWindowSeconds = UI::SliderInt(
                 "Show before start##round-starts-in-321-overlay",
@@ -159,18 +202,6 @@ namespace RoundStartsIn321 {
                 "Use real remaining time (seconds)##round-starts-in-321-overlay",
                 S_UseRealCountdown
             );
-            UI::SetNextItemWidth(260.0f);
-            S_FontScale = UI::SliderFloat(
-                "Display size##round-starts-in-321-overlay",
-                S_FontScale,
-                0.5f,
-                2.0f,
-                "%.2f x"
-            );
-            S_AnimateOverlay = UI::Checkbox(
-                "Animate appearance and GO!##round-starts-in-321-overlay",
-                S_AnimateOverlay
-            );
             UI::Separator();
             S_ShowGo = UI::Checkbox("Show GO!##round-starts-in-321-overlay", S_ShowGo);
             if (S_ShowGo) {
@@ -184,6 +215,25 @@ namespace RoundStartsIn321 {
                 );
             }
             UI::Separator();
+            RenderCountdownPreviewControls();
+            UI::SameLine();
+            if (UI::Button("Reset defaults##general")) ResetGeneralSettings();
+        }
+
+        void RenderAppearanceSettingsUI() {
+            UI::SetNextItemWidth(260.0f);
+            S_FontScale = UI::SliderFloat(
+                "Display size##round-starts-in-321-overlay",
+                S_FontScale,
+                0.5f,
+                2.0f,
+                "%.2f x"
+            );
+            S_AnimateOverlay = UI::Checkbox(
+                "Animate appearance and GO!##round-starts-in-321-overlay",
+                S_AnimateOverlay
+            );
+            UI::Separator();
             S_ShowBackground = UI::Checkbox(
                 "Show high-contrast background##round-starts-in-321-overlay",
                 S_ShowBackground
@@ -192,6 +242,8 @@ namespace RoundStartsIn321 {
             S_CountdownColor = UI::InputColor4("Countdown color##round-starts-in-321-overlay", S_CountdownColor);
             S_GoColor = UI::InputColor4("GO! color##round-starts-in-321-overlay", S_GoColor);
             if (S_ShowBackground) {
+                UI::SetNextItemWidth(260.0f);
+                S_CardOpacity = UI::SliderInt("Card opacity", S_CardOpacity, 0, 100, "%d%%");
                 S_UseStageBackgroundColors = UI::Checkbox(
                     "Color background by countdown step##round-starts-in-321-overlay",
                     S_UseStageBackgroundColors
@@ -221,6 +273,20 @@ namespace RoundStartsIn321 {
                 }
             }
             UI::Separator();
+            RenderCountdownPreviewControls();
+            UI::SameLine();
+            if (UI::Button("Reset defaults##appearance")) ResetAppearanceSettings();
+        }
+
+        void RenderWindowSettingsUI() {
+            S_FlashTaskbar = UI::Checkbox("Flash taskbar on countdown", S_FlashTaskbar);
+            S_FocusGame = UI::Checkbox("Focus game on countdown", S_FocusGame);
+            UI::SetItemTooltip("Brings Trackmania forward when the countdown starts, including from another vistual desktop.");
+            UI::Separator();
+            if (UI::Button("Reset defaults##window")) ResetWindowSettings();
+        }
+
+        void RenderCountdownPreviewControls() {
             if (UI::Button("Preview countdown##round-starts-in-321-overlay")) {
                 StartPreview();
             }
@@ -229,10 +295,6 @@ namespace RoundStartsIn321 {
                 if (UI::Button("Stop preview##round-starts-in-321-overlay")) {
                     StopPreview();
                 }
-            }
-            UI::SameLine();
-            if (UI::Button("Reset defaults##round-starts-in-321-overlay")) {
-                ResetOverlaySettings();
             }
         }
     }

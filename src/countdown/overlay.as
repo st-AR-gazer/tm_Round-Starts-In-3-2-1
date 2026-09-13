@@ -72,13 +72,21 @@ namespace RoundStartsIn321 {
         }
 
         vec4 BackgroundColorForFrame(int remainingMs, int displaySpanMs, bool showGo) {
-            if (!S_UseStageBackgroundColors) return S_BackgroundColor;
-            if (showGo) return S_GoBackgroundColor;
-
-            int step = AdaptiveCountdownStep(remainingMs, displaySpanMs);
-            if (step >= 3) return S_ThreeBackgroundColor;
-            if (step == 2) return S_TwoBackgroundColor;
-            return S_OneBackgroundColor;
+            vec4 color = S_BackgroundColor;
+            if (S_UseStageBackgroundColors) {
+                int step = AdaptiveCountdownStep(remainingMs, displaySpanMs);
+                if (showGo) {
+                    color = S_GoBackgroundColor;
+                } else if (step >= 3) {
+                    color = S_ThreeBackgroundColor;
+                } else if (step == 2) {
+                    color = S_TwoBackgroundColor;
+                } else {
+                    color = S_OneBackgroundColor;
+                }
+            }
+            color.w *= float(Math::Clamp(S_CardOpacity, 0, 100)) / 100.0f;
+            return color;
         }
 
         string FormatAdaptiveCountdownValue(int remainingMs, int displaySpanMs) {
@@ -104,6 +112,7 @@ namespace RoundStartsIn321 {
                 return !showGo || S_ShowGo;
             }
             if (!S_Enabled) return false;
+            if (!IsCountdownSessionAllowed()) return false;
             if (S_HideWithGameUi && !UI::IsGameUIVisible()) return false;
 
             if (g_Phase == CountdownPhase::Counting && g_Snapshot !is null) {

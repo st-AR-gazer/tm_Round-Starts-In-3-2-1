@@ -111,11 +111,11 @@ namespace RoundStartsIn321 {
                     PlayTickSound(SoundForStep(step));
                 }
             }
-            if ((g_Phase != CountdownPhase::Counting && g_Phase != CountdownPhase::Go)
-                || g_Snapshot is null || !g_Snapshot.canTrack) return;
+            if ((g_Phase != CountdownPhase::Counting && g_Phase != CountdownPhase::Go) || g_Snapshot is null || !g_Snapshot.canTrack) return;
             int step = g_Phase == CountdownPhase::Go ? 0 : SoundStep(g_Snapshot.remainingMs, g_DisplayCountdownSpanMs);
             if (!g_SoundTicks.Consume(step)) return;
             if (preview || !S_SoundsEnabled || !S_Enabled) return;
+            if (!IsCountdownSessionAllowed()) return;
             if (S_HideWithGameUi && !UI::IsGameUIVisible()) return;
             PlayTickSound(SoundForStep(step));
         }
@@ -131,7 +131,6 @@ namespace RoundStartsIn321 {
             }
             UI::SameLine();
             if (UI::Button("Play##" + label)) PlayTickSound(selected);
-            UI::SetItemTooltip("Preview this sound, even when countdown sounds are off.");
             if (selected != TickSound::None && !IsSoundAvailable(selected)) {
                 UI::SameLine();
                 UI::Text("Unavailable");
