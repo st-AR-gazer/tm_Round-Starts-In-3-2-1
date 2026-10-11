@@ -13,12 +13,7 @@ namespace RoundStartsIn321 {
 
         void UpdateWindowAttention() {
             if (!ConsumeCountdownAppearance(UI::IsGameUIVisible())) return;
-            if (S_FocusGame && !FocusGameWindow()) {
-                logging::Warning(
-                    "Windows did not grant focus to Trackmania.",
-                    "RoundStartsIn321::Countdown::UpdateWindowAttention"
-                );
-            }
+            if (S_FocusGame) FocusGameWindow();
             if (!S_FlashTaskbar) return;
             auto app = cast<CTrackMania>(GetApp());
             if (app is null || app.ManiaPlanetScriptAPI is null) return;
